@@ -1,21 +1,13 @@
 import streamlit as st
 import requests
 
-# -----------------------
-# SETUP API
-# -----------------------
-
 API_URL = "https://api-inference.huggingface.co/models/Vamsi/T5_Paraphrase"
 
-# IMPORTANT:
-# Replace "YOUR_HF_API_TOKEN" with your real HuggingFace API token
 HEADERS = {
     "Authorization": "Bearer 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"
 }
 
-# -----------------------
-# PARAPHRASING FUNCTION
-# -----------------------
+
 def paraphrase_text(text):
     try:
         payload = {
@@ -39,9 +31,7 @@ def paraphrase_text(text):
     except Exception as e:
         return f"Error: {e}"
 
-# -----------------------
-# STREAMLIT UI
-# -----------------------
+
 def main():
     st.title("AI Human Paraphraser")
     st.write("Transform your text into natural, human-like writing — powered by AI.")
