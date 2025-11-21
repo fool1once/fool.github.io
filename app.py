@@ -1,56 +1,63 @@
 import streamlit as st
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-import torch
+import requests
 
-# Load model with caching
-@st.cache_resource(show_spinner="Loading AI model... This may take a moment.")
-def load_model():
-    tokenizer = AutoTokenizer.from_pretrained("Vamsi/T5_Paraphrase")
-    model = AutoModelForSeq2SeqLM.from_pretrained("Vamsi/T5_Paraphrase")
-    return tokenizer, model
+# -----------------------
+# SETUP API
+# -----------------------
 
-# Paraphrasing function
-def paraphrase_text(text, tokenizer, model, max_length=512, num_beams=5, temperature=0.7):
+API_URL = "https://api-inference.huggingface.co/models/Vamsi/T5_Paraphrase"
+
+# IMPORTANT:
+# Replace "YOUR_HF_API_TOKEN" with your real HuggingFace API token
+HEADERS = {
+    "Authorization": "Bearer YOUR_HF_API_TOKEN"
+}
+
+# -----------------------
+# PARAPHRASING FUNCTION
+# -----------------------
+def paraphrase_text(text):
     try:
-        encoded = tokenizer.encode_plus(
-            f"paraphrase: {text}",
-            max_length=max_length,
-            padding='max_length',
-            truncation=True,
-            return_tensors="pt"
-        )
+        payload = {
+            "inputs": f"paraphrase: {text}",
+            "parameters": {"temperature": 0.7}
+        }
 
-        outputs = model.generate(
-            input_ids=encoded['input_ids'],
-            attention_mask=encoded['attention_mask'],
-            max_length=max_length,
-            num_beams=num_beams,
-            num_return_sequences=1,
-            temperature=temperature,
-            do_sample=True,
-            early_stopping=True
-        )
+        response = requests.post(API_URL, headers=HEADERS, json=payload)
 
-        paraphrase = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return paraphrase
+        if response.status_code != 200:
+            return f"API Error: {response.text}"
+
+        data = response.json()
+
+        # HuggingFace returns a list of dictionaries
+        if isinstance(data, list) and "generated_text" in data[0]:
+            return data[0]["generated_text"]
+
+        return "Unexpected response format."
+
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {e}"
 
-# Main app
+# -----------------------
+# STREAMLIT UI
+# -----------------------
 def main():
     st.title("AI Human Paraphraser")
-    st.write("Transform any text into natural, human-like writing")
+    st.write("Transform your text into natural, human-like writing — powered by AI.")
 
-    input_text = st.text_area("Enter your text here...", height=200)
+    text = st.text_area("Enter text to paraphrase:", height=200)
 
     if st.button("Paraphrase Text"):
-        if not input_text:
-            st.error("Please enter some text to paraphrase!")
+        if not text.strip():
+            st.error("Please enter some text first!")
         else:
-            tokenizer, model = load_model()
-            paraphrased = paraphrase_text(input_text, tokenizer, model)
-            st.success("Paraphrased Text:")
-            st.write(paraphrased)
+            with st.spinner("Paraphrasing... please wait"):
+                result = paraphrase_text(text)
+
+            st.subheader("Paraphrased Output:")
+            st.write(result)
+
 
 if __name__ == "__main__":
     main()
