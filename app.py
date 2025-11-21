@@ -10,7 +10,7 @@ API_URL = "https://api-inference.huggingface.co/models/Vamsi/T5_Paraphrase"
 # IMPORTANT:
 # Replace "YOUR_HF_API_TOKEN" with your real HuggingFace API token
 HEADERS = {
-    "Authorization": "Bearer YOUR_HF_API_TOKEN"
+    "Authorization": "Bearer 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"
 }
 
 # -----------------------
