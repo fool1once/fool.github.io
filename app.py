@@ -10,7 +10,7 @@ API_URL = "https://router.huggingface.co/models/Vamsi/T5_Paraphrase"
 # IMPORTANT:
 # Replace with your actual HuggingFace API Token
 HEADERS = {
-    "Authorization": "Bearer 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"
+    "Authorization": "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"
 }
 
 # -----------------------
