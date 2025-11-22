@@ -6,7 +6,7 @@ API_URL = "https://router.huggingface.co/pipeline/text2text-generation/Vamsi/T5_
 
 # Replace this with your real HF API token
 HEADERS = {
-    "Authorization": f"Bearer {st.secrets['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]}"
+    "Authorization": f"Bearer {st.secrets['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']}"
 }
 
 def paraphrase_text(text):
