@@ -1,55 +1,14 @@
-import streamlit as st
-import requests
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
-# Correct HuggingFace Router endpoint
-API_URL = "https://api-inference.huggingface.co/models/Vamsi/T5_Paraphrase"
-
-# Replace this with your real HF API token
-HEADERS = {
-    "Authorization": f"Bearer {st.secrets['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']}"
-}
-
-def paraphrase_text(text):
-    try:
-        payload = {
-            "inputs": f"paraphrase: {text}",
-            "parameters": {
-                "temperature": 0.7
-            }
-        }
-
-        response = requests.post(API_URL, headers=HEADERS, json=payload)
-
-        if response.status_code != 200:
-            return f"API Error: {response.text}"
-
-        data = response.json()
-
-        # Expected format:
-        # [{"generated_text": "..."}]
-        if isinstance(data, list) and "generated_text" in data[0]:
-            return data[0]["generated_text"]
-
-        return "Unexpected response format."
-
-    except Exception as e:
-        return f"Error: {e}"
-
-def main():
-    st.title("AI Human Paraphraser")
-    st.write("Transform your text into natural, human-like writing — powered by AI.")
-
-    text = st.text_area("Enter text to paraphrase:", height=200)
-
-    if st.button("Paraphrase Text"):
-        if not text.strip():
-            st.error("Please enter some text first!")
-        else:
-            with st.spinner("Paraphrasing..."):
-                result = paraphrase_text(text)
-
-            st.subheader("Paraphrased Output:")
-            st.write(result)
-
-if __name__ == "__main__":
-    main()
+def paraphrase_with_local_model(text):
+    tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
+    model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
+    
+    prompt = f"[INST] Paraphrase this text to sound human-written: {text} [/INST]"
+    
+    inputs = tokenizer(prompt, return_tensors="pt")
+    outputs = model.generate(**inputs, max_length=1000, temperature=0.7, do_sample=True)
+    
+    result = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return result.split("[/INST]")[-1].strip()
