@@ -1,2 +1,6 @@
 streamlit
-requests
+openai
+google-generativeai
+re
+io
+datetime
