@@ -6,7 +6,7 @@ API_URL = "https://router.huggingface.co/pipeline/text2text-generation/Vamsi/T5_
 
 # Replace this with your real HF API token
 HEADERS = {
-    "Authorization": f"Bearer {st.secrets['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']}"
+    "Authorization": f"Bearer {st.secrets['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]}"
 }
 
 def paraphrase_text(text):
@@ -37,4 +37,19 @@ def paraphrase_text(text):
 
 def main():
     st.title("AI Human Paraphraser")
-    st.write("Transform your text into natural, human-like writin
+    st.write("Transform your text into natural, human-like writing — powered by AI.")
+
+    text = st.text_area("Enter text to paraphrase:", height=200)
+
+    if st.button("Paraphrase Text"):
+        if not text.strip():
+            st.error("Please enter some text first!")
+        else:
+            with st.spinner("Paraphrasing..."):
+                result = paraphrase_text(text)
+
+            st.subheader("Paraphrased Output:")
+            st.write(result)
+
+if __name__ == "__main__":
+    main()
