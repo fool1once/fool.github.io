@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # Correct HuggingFace Router endpoint
-API_URL = "https://router.huggingface.co/pipeline/text2text-generation/Vamsi/T5_Paraphrase"
+API_URL = "https://api-inference.huggingface.co/models/Vamsi/T5_Paraphrase"
 
 # Replace this with your real HF API token
 HEADERS = {
